@@ -9,24 +9,24 @@
 <style>
   body {
     font-family: 'Cairo', sans-serif;
-    background: linear-gradient(135deg, #f5f5f7, #e0e0ff);
-    color: #333;
+    background-color: #f6f8fa;
+    color: #24292e;
     margin: 0;
     padding: 0;
   }
   .container {
-    max-width: 950px;
-    margin: 50px auto;
+    max-width: 900px;
+    margin: 40px auto;
     padding: 25px;
     background: #ffffff;
-    border-radius: 18px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
   }
   h1 {
     text-align: center;
-    color: #5a3e85;
-    margin-bottom: 35px;
-    font-size: 2em;
+    color: #57606a;
+    margin-bottom: 30px;
+    font-size: 1.8em;
   }
   .input-area {
     display: flex;
@@ -38,14 +38,18 @@
     flex: 1 1 200px;
     padding: 12px 15px;
     border-radius: 12px;
-    border: 1px solid #ccc;
+    border: 1px solid #d1d5da;
     font-size: 15px;
     outline: none;
+    transition: border 0.3s;
+  }
+  .input-area input[type="text"]:focus {
+    border-color: #6f42c1;
   }
   .input-area button {
-    padding: 12px 20px;
+    padding: 12px 18px;
     border: none;
-    background: linear-gradient(90deg, #6c4dc7, #5a3e85);
+    background: #6f42c1;
     color: #fff;
     font-size: 15px;
     border-radius: 12px;
@@ -53,32 +57,31 @@
     transition: all 0.3s;
   }
   .input-area button:hover {
-    background: linear-gradient(90deg, #5a3e85, #422b62);
+    background: #5a35a1;
   }
   .clips {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+    gap: 18px;
   }
   .clip {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    background: linear-gradient(135deg, #f0f0ff, #dcdcff);
+    background: #f6f8fa;
     padding: 15px;
-    border-radius: 14px;
+    border-radius: 12px;
     word-wrap: break-word;
-    overflow-wrap: break-word;
     position: relative;
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(15px);
     animation: fadeInUp 0.5s forwards;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
     transition: transform 0.3s, box-shadow 0.3s;
   }
   .clip:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
   }
   @keyframes fadeInUp {
     to { opacity: 1; transform: translateY(0); }
@@ -89,35 +92,44 @@
     font-size: 15px;
     line-height: 1.5;
     word-break: break-word;
+    white-space: pre-wrap;
   }
   .clip-title {
     font-weight: bold;
-    margin-bottom: 5px;
-    color: #422b62;
+    margin-bottom: 6px;
+    color: #6f42c1;
+    font-size: 14px;
   }
-  .copy-btn {
-    background: linear-gradient(90deg, #6c4dc7, #5a3e85);
+  .clip-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .clip-actions button {
     border: none;
-    color: #fff;
-    padding: 7px 12px;
+    background: #6f42c1;
+    color: white;
+    padding: 6px;
     border-radius: 8px;
     cursor: pointer;
+    font-size: 14px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: 14px;
+    justify-content: center;
     transition: all 0.3s;
   }
-  .copy-btn:hover {
-    background: linear-gradient(90deg, #5a3e85, #422b62);
+  .clip-actions button:hover {
+    background: #5a35a1;
   }
   .copied-msg {
     position: absolute;
-    top: -30px;
+    top: -28px;
     right: 10px;
-    background: #4caf50;
+    background: #28a745;
     color: white;
-    padding: 5px 10px;
+    padding: 4px 10px;
     border-radius: 6px;
     font-size: 13px;
     opacity: 0;
@@ -125,6 +137,123 @@
   }
 </style>
 </head>
+<body>
+<div class="container">
+  <h1>كل انواع الكلايش الي تريدها تلكاها هنا</h1>
+  
+  <!-- بحث الكلايشات -->
+  <div class="input-area">
+    <input type="text" id="searchInput" placeholder="ابحث عن الكليشة بالعنوان...">
+    <button id="searchBtn">بحث</button>
+  </div>
+
+  <!-- إضافة الكلايش -->
+  <div class="input-area">
+    <input type="text" id="clipTitle" placeholder="عنوان الكليشة">
+    <input type="text" id="clipInput" placeholder="أدخل نص الكليشة هنا...">
+    <button id="addClip">إضافة</button>
+  </div>
+
+  <div class="clips" id="clipsContainer"></div>
+</div>
+
+<script>
+  const clipInput = document.getElementById('clipInput');
+  const clipTitle = document.getElementById('clipTitle');
+  const addClipBtn = document.getElementById('addClip');
+  const clipsContainer = document.getElementById('clipsContainer');
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+
+  let clips = JSON.parse(localStorage.getItem('clips')) || [];
+
+  function renderClips(filter='') {
+    clipsContainer.innerHTML = '';
+    clips
+      .filter(c => c.title.includes(filter))
+      .forEach((clip, index) => {
+      const clipDiv = document.createElement('div');
+      clipDiv.className = 'clip';
+
+      const textDiv = document.createElement('div');
+      textDiv.className = 'clip-text';
+
+      const titleDiv = document.createElement('div');
+      titleDiv.className = 'clip-title';
+      titleDiv.textContent = clip.title;
+
+      const contentDiv = document.createElement('div');
+      contentDiv.textContent = clip.text;
+
+      textDiv.appendChild(titleDiv);
+      textDiv.appendChild(contentDiv);
+
+      const actionsDiv = document.createElement('div');
+      actionsDiv.className = 'clip-actions';
+
+      const copyBtn = document.createElement('button');
+      copyBtn.innerHTML = '<i class="fas fa-copy"></i>';
+      copyBtn.title = "نسخ";
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(clip.text);
+        showCopiedMessage(clipDiv);
+      }
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+      deleteBtn.title = "حذف";
+      deleteBtn.onclick = () => {
+        clips.splice(index, 1);
+        localStorage.setItem('clips', JSON.stringify(clips));
+        renderClips(searchInput.value.trim());
+      }
+
+      actionsDiv.appendChild(copyBtn);
+      actionsDiv.appendChild(deleteBtn);
+
+      clipDiv.appendChild(textDiv);
+      clipDiv.appendChild(actionsDiv);
+
+      clipsContainer.appendChild(clipDiv);
+    });
+  }
+
+  function showCopiedMessage(clipDiv) {
+    let msg = clipDiv.querySelector('.copied-msg');
+    if (!msg) {
+      msg = document.createElement('div');
+      msg.className = 'copied-msg';
+      msg.textContent = 'تم النسخ!';
+      clipDiv.appendChild(msg);
+    }
+    msg.style.opacity = '1';
+    setTimeout(() => { msg.style.opacity = '0'; }, 1200);
+  }
+
+  addClipBtn.addEventListener('click', () => {
+    const text = clipInput.value.trim();
+    const title = clipTitle.value.trim();
+    if (text && title) {
+      clips.push({title, text});
+      localStorage.setItem('clips', JSON.stringify(clips));
+      clipInput.value = '';
+      clipTitle.value = '';
+      renderClips();
+    } else {
+      alert('الرجاء إدخال عنوان ونص الكليشة');
+    }
+  });
+
+  searchBtn.addEventListener('click', () => {
+    const query = searchInput.value.trim();
+    renderClips(query);
+  });
+
+  // عرض الكلايشات عند تحميل الصفحة
+  renderClips();
+</script>
+</body>
+</html></head>
 <body>
 <div class="container">
   <h1>كل انواع الكلايش الي تريدها تلكاها هنا</h1>
@@ -339,4 +468,5 @@
 </script>
 </body>
 </html>
+
 
