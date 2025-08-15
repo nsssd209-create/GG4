@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>كلايشاتي الفخمة</title>
+<title>كل انواع الكلايش الي تريدها تلكاها هنا</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <style>
@@ -15,12 +15,12 @@
     padding: 0;
   }
   .container {
-    max-width: 900px;
+    max-width: 950px;
     margin: 50px auto;
     padding: 25px;
     background: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
   }
   h1 {
     text-align: center;
@@ -30,23 +30,25 @@
   }
   .input-area {
     display: flex;
-    margin-bottom: 25px;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
   }
-  .input-area input {
-    flex: 1;
-    padding: 15px 20px;
-    border-radius: 12px 0 0 12px;
+  .input-area input[type="text"] {
+    flex: 1 1 200px;
+    padding: 12px 15px;
+    border-radius: 12px;
     border: 1px solid #ccc;
-    font-size: 16px;
+    font-size: 15px;
     outline: none;
   }
   .input-area button {
-    padding: 15px 25px;
+    padding: 12px 20px;
     border: none;
     background: linear-gradient(90deg, #6c4dc7, #5a3e85);
     color: #fff;
-    font-size: 16px;
-    border-radius: 0 12px 12px 0;
+    font-size: 15px;
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s;
   }
@@ -62,9 +64,164 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    background-color: #f0f0ff;
+    background: linear-gradient(135deg, #f0f0ff, #dcdcff);
     padding: 15px;
-    border-radius: 12px;
+    border-radius: 14px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    position: relative;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s forwards;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .clip:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+  }
+  @keyframes fadeInUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .clip-text {
+    flex: 1;
+    margin-right: 10px;
+    font-size: 15px;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+  .clip-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #422b62;
+  }
+  .copy-btn {
+    background: linear-gradient(90deg, #6c4dc7, #5a3e85);
+    border: none;
+    color: #fff;
+    padding: 7px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    transition: all 0.3s;
+  }
+  .copy-btn:hover {
+    background: linear-gradient(90deg, #5a3e85, #422b62);
+  }
+  .copied-msg {
+    position: absolute;
+    top: -30px;
+    right: 10px;
+    background: #4caf50;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>كل انواع الكلايش الي تريدها تلكاها هنا</h1>
+  <div class="input-area">
+    <input type="text" id="clipTitle" placeholder="عنوان الكليشة">
+    <input type="text" id="clipInput" placeholder="أدخل نص الكليشة هنا...">
+    <button id="addClip">إضافة</button>
+  </div>
+  <div class="input-area">
+    <input type="text" id="searchInput" placeholder="ابحث عن الكليشة بالعنوان...">
+    <button id="searchBtn">بحث</button>
+  </div>
+  <div class="clips" id="clipsContainer"></div>
+</div>
+
+<script>
+  const clipInput = document.getElementById('clipInput');
+  const clipTitle = document.getElementById('clipTitle');
+  const addClipBtn = document.getElementById('addClip');
+  const clipsContainer = document.getElementById('clipsContainer');
+  const searchInput = document.getElementById('searchInput');
+  const searchBtn = document.getElementById('searchBtn');
+
+  let clips = JSON.parse(localStorage.getItem('clips')) || [];
+
+  function renderClips(filter='') {
+    clipsContainer.innerHTML = '';
+    clips
+      .filter(c => c.title.includes(filter))
+      .forEach((clip, index) => {
+      const clipDiv = document.createElement('div');
+      clipDiv.className = 'clip';
+
+      const textDiv = document.createElement('div');
+      textDiv.className = 'clip-text';
+
+      const titleDiv = document.createElement('div');
+      titleDiv.className = 'clip-title';
+      titleDiv.textContent = clip.title;
+
+      const contentDiv = document.createElement('div');
+      contentDiv.textContent = clip.text;
+
+      textDiv.appendChild(titleDiv);
+      textDiv.appendChild(contentDiv);
+
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'copy-btn';
+      copyBtn.innerHTML = '<i class="fas fa-copy"></i> نسخ';
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(clip.text);
+        showCopiedMessage(clipDiv);
+      }
+
+      clipDiv.appendChild(textDiv);
+      clipDiv.appendChild(copyBtn);
+
+      clipsContainer.appendChild(clipDiv);
+    });
+  }
+
+  function showCopiedMessage(clipDiv) {
+    let msg = clipDiv.querySelector('.copied-msg');
+    if (!msg) {
+      msg = document.createElement('div');
+      msg.className = 'copied-msg';
+      msg.textContent = 'تم النسخ!';
+      clipDiv.appendChild(msg);
+    }
+    msg.style.opacity = '1';
+    setTimeout(() => { msg.style.opacity = '0'; }, 1200);
+  }
+
+  addClipBtn.addEventListener('click', () => {
+    const text = clipInput.value.trim();
+    const title = clipTitle.value.trim();
+    if (text && title) {
+      clips.push({title, text});
+      localStorage.setItem('clips', JSON.stringify(clips));
+      clipInput.value = '';
+      clipTitle.value = '';
+      renderClips();
+    } else {
+      alert('الرجاء إدخال عنوان ونص الكليشة');
+    }
+  });
+
+  searchBtn.addEventListener('click', () => {
+    const query = searchInput.value.trim();
+    renderClips(query);
+  });
+
+  // عرض الكلايشات عند تحميل الصفحة
+  renderClips();
+</script>
+</body>
+</html>    border-radius: 12px;
     word-wrap: break-word;
     overflow-wrap: break-word;
     position: relative;
@@ -182,3 +339,4 @@
 </script>
 </body>
 </html>
+
