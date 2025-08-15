@@ -3,82 +3,182 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الكلايشات</title>
+<title>كلايشاتي الفخمة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <style>
-body { font-family: Arial, sans-serif; background:#f0f4f8; margin:0; padding:0; direction:rtl; }
-header { background:#6c5ce7; color:#fff; padding:25px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.1);}
-h1 { margin:0; font-size:2em; }
-.container { max-width:700px; margin:20px auto; padding:0 15px; }
-#newClay { width:100%; padding:12px; border-radius:6px; border:1px solid #ccc; margin-bottom:10px; font-size:1em; }
-button.addBtn { padding:12px; width:100%; border:none; border-radius:6px; background:#6c5ce7; color:#fff; cursor:pointer; transition:0.3s; font-size:1em; }
-button.addBtn:hover { background:#5941c4; }
-#claysContainer { margin-top:20px; display:flex; flex-direction:column; gap:10px; }
-.clayCard { background:#fff; padding:12px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1); position:relative; }
-.copyBtn { position:absolute; top:8px; left:8px; background:#6c5ce7; border:none; color:#fff; border-radius:50%; width:28px; height:28px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:0.2s; }
-.copyBtn:hover { background:#5941c4; }
-.toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#333; color:#fff; padding:10px 20px; border-radius:5px; opacity:0; transition:0.4s; }
-@media(max-width:500px){ #newClay, .addBtn{ font-size:0.9em; padding:10px;} .copyBtn{ width:24px; height:24px; font-size:14px;} .clayCard{ font-size:0.9em; padding:10px;} }
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: linear-gradient(135deg, #f5f5f7, #e0e0ff);
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 25px;
+    background: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  }
+  h1 {
+    text-align: center;
+    color: #5a3e85;
+    margin-bottom: 35px;
+    font-size: 2em;
+  }
+  .input-area {
+    display: flex;
+    margin-bottom: 25px;
+  }
+  .input-area input {
+    flex: 1;
+    padding: 15px 20px;
+    border-radius: 12px 0 0 12px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    outline: none;
+  }
+  .input-area button {
+    padding: 15px 25px;
+    border: none;
+    background: linear-gradient(90deg, #6c4dc7, #5a3e85);
+    color: #fff;
+    font-size: 16px;
+    border-radius: 0 12px 12px 0;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .input-area button:hover {
+    background: linear-gradient(90deg, #5a3e85, #422b62);
+  }
+  .clips {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  .clip {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: #f0f0ff;
+    padding: 15px;
+    border-radius: 12px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    position: relative;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s forwards;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  }
+  @keyframes fadeInUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .clip-text {
+    flex: 1;
+    margin-right: 10px;
+    font-size: 15px;
+    line-height: 1.4;
+    word-break: break-word;
+  }
+  .copy-btn {
+    background: linear-gradient(90deg, #6c4dc7, #5a3e85);
+    border: none;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    transition: all 0.3s;
+  }
+  .copy-btn:hover {
+    background: linear-gradient(90deg, #5a3e85, #422b62);
+  }
+  .copied-msg {
+    position: absolute;
+    top: -30px;
+    right: 10px;
+    background: #4caf50;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
 </style>
 </head>
 <body>
-
-<header><h1>الكلايشات</h1></header>
-
 <div class="container">
-<input type="text" id="newClay" placeholder="أدخل الكلايش هنا">
-<button class="addBtn" onclick="addClay()">إضافة كلايش</button>
-
-<div id="claysContainer"></div>
+  <h1>كلايشاتي الفخمة</h1>
+  <div class="input-area">
+    <input type="text" id="clipInput" placeholder="أدخل الكليشة هنا...">
+    <button id="addClip">إضافة</button>
+  </div>
+  <div class="clips" id="clipsContainer"></div>
 </div>
 
-<div class="toast" id="toast">تم نسخ الكلايش!</div>
-
 <script>
-const container = document.getElementById('claysContainer');
-const toast = document.getElementById('toast');
+  const clipInput = document.getElementById('clipInput');
+  const addClipBtn = document.getElementById('addClip');
+  const clipsContainer = document.getElementById('clipsContainer');
 
-// جلب الكلايشات من LocalStorage عند التحميل
-let clays = JSON.parse(localStorage.getItem('clays')) || [];
-clays.forEach(c => addClayToDOM(c));
+  let clips = JSON.parse(localStorage.getItem('clips')) || [];
 
-// حفظ البيانات
-function saveClays() {
-    localStorage.setItem('clays', JSON.stringify(clays));
-}
+  function renderClips() {
+    clipsContainer.innerHTML = '';
+    clips.forEach((clip, index) => {
+      const clipDiv = document.createElement('div');
+      clipDiv.className = 'clip';
 
-// إضافة كلايش جديد
-function addClay(){
-    const input = document.getElementById('newClay');
-    const text = input.value.trim();
-    if(!text) return;
-    const clay = { text };
-    clays.push(clay);
-    saveClays();
-    addClayToDOM(clay);
-    input.value='';
-}
+      const textDiv = document.createElement('div');
+      textDiv.className = 'clip-text';
+      textDiv.textContent = clip;
 
-// إنشاء بطاقة كلايش في الواجهة
-function addClayToDOM(clay){
-    const card = document.createElement('div');
-    card.className='clayCard';
-    card.textContent = clay.text;
+      const copyBtn = document.createElement('button');
+      copyBtn.className = 'copy-btn';
+      copyBtn.innerHTML = '<i class="fas fa-copy"></i> نسخ';
+      copyBtn.onclick = () => {
+        navigator.clipboard.writeText(clip);
+        showCopiedMessage(clipDiv);
+      }
 
-    const copyBtn = document.createElement('button');
-    copyBtn.className='copyBtn';
-    copyBtn.innerHTML='📋';
-    copyBtn.onclick = (e)=>{ e.stopPropagation(); navigator.clipboard.writeText(clay.text); showToast(); };
-    card.appendChild(copyBtn);
+      clipDiv.appendChild(textDiv);
+      clipDiv.appendChild(copyBtn);
 
-    container.appendChild(card);
-}
+      clipsContainer.appendChild(clipDiv);
+    });
+  }
 
-// رسالة نسخ صغيرة
-function showToast(){
-    toast.style.opacity='1';
-    setTimeout(()=>{toast.style.opacity='0';},1500);
-}
+  function showCopiedMessage(clipDiv) {
+    let msg = clipDiv.querySelector('.copied-msg');
+    if (!msg) {
+      msg = document.createElement('div');
+      msg.className = 'copied-msg';
+      msg.textContent = 'تم النسخ!';
+      clipDiv.appendChild(msg);
+    }
+    msg.style.opacity = '1';
+    setTimeout(() => { msg.style.opacity = '0'; }, 1200);
+  }
+
+  addClipBtn.addEventListener('click', () => {
+    const clipText = clipInput.value.trim();
+    if (clipText) {
+      clips.push(clipText);
+      localStorage.setItem('clips', JSON.stringify(clips));
+      clipInput.value = '';
+      renderClips();
+    }
+  });
+
+  // عرض الكلايشات عند تحميل الصفحة
+  renderClips();
 </script>
-
 </body>
 </html>
